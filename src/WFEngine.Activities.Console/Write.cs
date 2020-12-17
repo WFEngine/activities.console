@@ -7,25 +7,30 @@ namespace WFEngine.Activities.Console
 {
     public class Write :WFActivity
     {
-        public override string CompileActivity()
+        public override void Run()
         {
             WFArgument message = Arguments.FirstOrDefault(x => x.Name == "Message");
-            if (message == null)
-                throw new ArgumentNullException(nameof(message));
-            string code = "";
-            if (message.IsVariable)
-                code = $"System.Console.Write({message.Value});";
-            else
+            var jsonValue = (Newtonsoft.Json.Linq.JArray)message.Value;
+            var value = (System.String)Convert.ChangeType(jsonValue.First, typeof(System.String));
+            if (value.Contains("$"))
             {
-                if (message.ArgumentType != typeof(string).FullName)
-                    throw new Exception();
-                else
+                do
                 {
-                    var value = (Newtonsoft.Json.Linq.JArray)message.Value;
-                    code = $"System.Console.Write(\"{value.First.ToString()}\");";
-                }
+                    var index = value.IndexOf("$");
+                    if (value.Length - 1 != index)
+                    {
+                        var afterItem = value[index + 1];
+                        if (afterItem.ToString() != "$")
+                        {
+                            foreach (var variable in Variables)
+                            {
+                                value = value.Replace($"${variable.Name}", $"{Convert.ChangeType(variable.Value, typeof(System.String))}");
+                            }
+                        }
+                    }
+                } while (value.Contains("$"));
             }
-            return code;
+            System.Console.Write(value);
         }
     }
 }

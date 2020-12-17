@@ -1,26 +1,27 @@
 ﻿using System;
 using System.Linq;
 using WFEngine.Activities.Core;
-using WFEngine.Activities.Core.Model;
 
 namespace WFEngine.Activities.Console
 {
-    public class WriteLine : WFActivity
+    public class Title : WFActivity
     {
         public override void Run()
         {
-            WFArgument message = Arguments.FirstOrDefault(x => x.Name == "Message");
-            var jsonValue = (Newtonsoft.Json.Linq.JArray)message.Value;
+            var title = Arguments.FirstOrDefault();
+            if (title.ArgumentType != typeof(string).FullName)
+                throw new System.Exception();
+            var jsonValue = (Newtonsoft.Json.Linq.JArray)title.Value;
             var value = (System.String)Convert.ChangeType(jsonValue.First, typeof(System.String));
-            if(value.Contains("$"))
+            if (value.Contains("$"))
             {
                 do
                 {
                     var index = value.IndexOf("$");
-                    if(value.Length-1 != index)
+                    if (value.Length - 1 != index)
                     {
                         var afterItem = value[index + 1];
-                        if(afterItem.ToString() != "$")
+                        if (afterItem.ToString() != "$")
                         {
                             foreach (var variable in Variables)
                             {
@@ -29,8 +30,9 @@ namespace WFEngine.Activities.Console
                         }
                     }
                 } while (value.Contains("$"));
-            }           
-            System.Console.WriteLine(value);           
+            }
+
+            System.Console.Title = value;
         }
     }
 }
