@@ -4,9 +4,10 @@ namespace WFEngine.Activities.Console
 {
     public class Clear : WFActivity
     {
-        public override void Run()
+        public override WFResponse Run()
         {
             System.Console.Clear();
+            return new WFResponse();
         }
     }
 }
