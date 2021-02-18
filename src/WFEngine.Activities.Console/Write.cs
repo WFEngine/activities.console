@@ -12,7 +12,7 @@ namespace WFEngine.Activities.Console
         {
             WFArgument messageArgument = Arguments.FirstOrDefault(x => x.Name == "Message");
             var argumentValue = messageArgument.GetFirstArgumentFromJson<string>().ReplaceToVariables(Variables);
-            System.Console.WriteLine(Regex.Unescape(argumentValue));
+            System.Console.Write(Regex.Unescape(argumentValue));
             return new WFResponse();
         }
     }
